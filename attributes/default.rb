@@ -26,22 +26,22 @@ default["percona"]["auto_restart"] = true
 
 case node["platform_family"]
 when "debian"
-  default["percona"]["server"]["socket"]                        = "/var/run/mysqld/mysqld.sock"
+  default["percona"]["server"]["socket"]                        = "/var/run/mysqld/%{port}/mysqld.sock"
   default["percona"]["server"]["default_storage_engine"]        = "InnoDB"
   default["percona"]["server"]["includedir"]                    = "/etc/mysql/conf.d/"
-  default["percona"]["server"]["pidfile"]                       = "/var/run/mysqld/mysqld.pid"
+  default["percona"]["server"]["pidfile"]                       = "/var/run/mysqld/%{port}/mysqld.pid"
   default["percona"]["server"]["package"]                       = "percona-server-server-5.6"
 when "rhel"
-  default["percona"]["server"]["socket"]                        = "/var/lib/mysql/mysql.sock"
+  default["percona"]["server"]["socket"]                        = "/var/lib/mysql/%{port}/mysql.sock"
   default["percona"]["server"]["default_storage_engine"]        = "innodb"
   default["percona"]["server"]["includedir"]                    = ""
-  default["percona"]["server"]["pidfile"]                       = "/var/lib/mysql/mysqld.pid"
+  default["percona"]["server"]["pidfile"]                       = "/var/lib/mysql/%{port}/mysqld.pid"
   default["percona"]["server"]["package"]                       = "Percona-Server-server-56"
   default["percona"]["server"]["shared_pkg"]                    = "Percona-Server-shared-56"
 end
 
 # Cookbook Settings
-default["percona"]["main_config_file"]                          = "/etc/my.cnf"
+default["percona"]["main_config_file"]                          = "/etc/mysql/%{port}/my.cnf"
 default["percona"]["keyserver"]                                 = "keys.gnupg.net"
 default["percona"]["encrypted_data_bag"]                        = "passwords"
 default["percona"]["skip_passwords"]                            = false
@@ -52,7 +52,7 @@ default["percona"]["server"]["enable"]                          = true
 # Basic Settings
 default["percona"]["server"]["role"]                            = "standalone"
 default["percona"]["server"]["username"]                        = "mysql"
-default["percona"]["server"]["datadir"]                         = "/var/lib/mysql"
+default["percona"]["server"]["datadir"]                         = "/var/lib/mysql/%{port}"
 default["percona"]["server"]["tmpdir"]                          = "/tmp"
 default["percona"]["server"]["debian_username"]                 = "debian-sys-maint"
 default["percona"]["server"]["nice"]                            = 0
