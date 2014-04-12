@@ -41,7 +41,8 @@ when "rhel"
 end
 
 # Cookbook Settings
-default["percona"]["main_config_file"]                          = "/etc/mysql/%{port}/my.cnf"
+default["percona"]["main_config_file"]                          = "/etc/mysql/my.cnf"
+default["percona"]["multi_config_file"]                         = "/var/lib/mysql/%{port}/my.cnf"
 default["percona"]["keyserver"]                                 = "keys.gnupg.net"
 default["percona"]["encrypted_data_bag"]                        = "passwords"
 default["percona"]["skip_passwords"]                            = false
