@@ -23,11 +23,15 @@ when "rhel"
 end
 
 
-include_recipe node["percona"]["server"]["role"] == "multi_instance" ? "percona::configure_multi_instance_server" : "percona::configure_server"
+include_recipe node["percona"]["server"]["role"] == "multi_instance" \
+    ? "percona::configure_multi_instance_server" \
+    : "percona::configure_server"
 
 # access grants
 unless node["percona"]["skip_passwords"]
-  include_recipe "percona::access_grants"
+  include_recipe node["percona"]["server"]["role"] == "multi_instance" \
+    ? "percona::access_grants_multi" \
+    : "percona::access_grants"
 end
 
 unless node["percona"]["skip_passwords"]

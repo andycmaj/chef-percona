@@ -49,19 +49,15 @@ directory tmpdir do
   action :create
 end
 
-log "Hey I'm #{node[:tags].join(",")}"
-
 instance_ports = node["instance_ports"]
 # TODO: default to just 3306 when instance_ports is null or empty
 
 instance_ports.each do |port|
-  instanceTag = "instance_%{port}" % { :port => port }
-  if tagged?(instanceTag)
-    log "Already tagged: %s" % [instanceTag]
-    break
-  end
-
   datadir = ( mysqld["datadir"] || server["datadir"] ) % { :port => port }
+  if File.exists?(datadir)
+    log "Already tagged: #{datadir}"
+    next
+  end
 
   # setup the data directory
   directory datadir do
@@ -72,7 +68,9 @@ instance_ports.each do |port|
   end
 
   # setup the main server config file
-  template percona["multi_config_file"] do
+  # For multiple instances of mysql.%{port}, place the cnf file in the (deprecated) datadir.
+  configFile = datadir + "/my.cnf"
+  template configFile do
     source "my.cnf.#{conf ? "custom" : server["role"]}.erb"
     variables :port => port
     owner "root"
@@ -87,28 +85,27 @@ instance_ports.each do |port|
     not_if "test -f #{datadir}/mysql/user.frm"
   end
 
-  tag(instanceTag)
+  serviceName = "mysql.#{port}"
+
+  template "/etc/init.d/#{serviceName}" do
+    source "init.d.mysql.erb"
+    variables :data_dir => datadir, :port => port
+    owner user
+    group user
+    mode 0755
+  end
+
+  # define the service
+  service serviceName do
+    supports :restart => true, :reload => true
+    action [ :enable, :start ]
+  end
+
+  # now let's set the root password only if this is the initial install
+  execute "Update MySQL root password" do
+    command "mysqladmin --host=127.0.0.1 --port=#{port} --user=root --password='' password '#{passwords.root_password}'"
+  end
 end
-
-execute "start-multi" do
-  command "/usr/bin/mysqld_multi start %{ports}" % { :ports => instance_ports.join(",") }
-  action :run
-end
-
-# link "/etc/init.d/mysqld_multi" do
-#   to "/usr/bin/mysqld_multi"
-# end
-#
-# # define the service
-# service "mysqld_multi" do
-#   provider Chef::Provider::Service::Init
-#   start_command "mysqld_multi start %{ports}" % { :ports => instance_ports.join(",") }
-#   stop_command "mysqld_multi stop %{ports}" % { :ports => instance_ports.join(",") }
-#   reload_command "mysqld_multi reload %{ports}" % { :ports => instance_ports.join(",") }
-#   supports :restart => false, :reload => true
-#   action server["enable"] ? :enable : :disable
-# end
-
 
 # TODO: loop through node[:tags] and remove instances that arent in instance_ports
 

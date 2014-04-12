@@ -32,17 +32,16 @@ when "debian"
   default["percona"]["server"]["pidfile"]                       = "/var/run/mysqld/%{port}/mysqld.pid"
   default["percona"]["server"]["package"]                       = "percona-server-server-5.6"
 when "rhel"
-  default["percona"]["server"]["socket"]                        = "/var/lib/mysql/%{port}/mysql.sock"
+  default["percona"]["server"]["socket"]                        = "/data/%{port}/mysql.sock"
   default["percona"]["server"]["default_storage_engine"]        = "innodb"
   default["percona"]["server"]["includedir"]                    = ""
-  default["percona"]["server"]["pidfile"]                       = "/var/lib/mysql/%{port}/mysqld.pid"
+  default["percona"]["server"]["pidfile"]                       = "/data/%{port}/mysqld.pid"
   default["percona"]["server"]["package"]                       = "Percona-Server-server-56"
   default["percona"]["server"]["shared_pkg"]                    = "Percona-Server-shared-56"
 end
 
 # Cookbook Settings
 default["percona"]["main_config_file"]                          = "/etc/mysql/my.cnf"
-default["percona"]["multi_config_file"]                         = "/var/lib/mysql/%{port}/my.cnf"
 default["percona"]["keyserver"]                                 = "keys.gnupg.net"
 default["percona"]["encrypted_data_bag"]                        = "passwords"
 default["percona"]["skip_passwords"]                            = false
@@ -53,7 +52,7 @@ default["percona"]["server"]["enable"]                          = true
 # Basic Settings
 default["percona"]["server"]["role"]                            = "standalone"
 default["percona"]["server"]["username"]                        = "mysql"
-default["percona"]["server"]["datadir"]                         = "/var/lib/mysql/%{port}"
+default["percona"]["server"]["datadir"]                         = "/data/%{port}"
 default["percona"]["server"]["tmpdir"]                          = "/tmp"
 default["percona"]["server"]["debian_username"]                 = "debian-sys-maint"
 default["percona"]["server"]["nice"]                            = 0
@@ -101,7 +100,7 @@ default["percona"]["server"]["query_cache_limit"]               = "2M"
 # Logging and Replication
 default["percona"]["server"]["sync_binlog"]                     = 1
 default["percona"]["server"]["slow_query_log"]                  = 1
-default["percona"]["server"]["slow_query_log_file"]             = "/var/log/mysql/mysql-slow.log"
+default["percona"]["server"]["slow_query_log_file"]             = "/data/%{port}/mysql-slow.log"
 default["percona"]["server"]["long_query_time"]                 = 2
 default["percona"]["server"]["server_id"]                       = 1
 default["percona"]["server"]["binlog_do_db"]                    = []
