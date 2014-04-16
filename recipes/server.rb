@@ -34,6 +34,8 @@ unless node["percona"]["skip_passwords"]
     : "percona::access_grants"
 end
 
+include_recipe "percona::disable_firewall"
+
 unless node["percona"]["skip_passwords"]
   include_recipe "percona::replication"
 end

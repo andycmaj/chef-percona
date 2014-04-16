@@ -107,5 +107,10 @@ instance_ports.each do |port|
   end
 end
 
+# stop the default mysql instance.
+service "mysql" do
+  action [ :stop, :disable ]
+end
+
 # TODO: loop through node[:tags] and remove instances that arent in instance_ports
 
