@@ -19,6 +19,14 @@ class Chef::EncryptedPasswords
     rescue
       Chef::Log.info("Using non-encrypted password for #{user}, #{key}")
     end
+
+    existing_pw_file = "/etc/mysql/pw"
+    if File.exists?(existing_pw_file)
+      File.open(existing_pw_file, "rb") { |file|
+        password = file.read().delete("\n")
+      }
+    end
+
     # password will be nil if no encrypted data bag was loaded
     # fall back to the attribute on this node
     password ||= default

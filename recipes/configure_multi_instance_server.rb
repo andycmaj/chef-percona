@@ -55,7 +55,8 @@ instance_ports = node["instance_ports"]
 instance_ports.each do |port|
   datadir = ( mysqld["datadir"] || server["datadir"] ) % { :port => port }
   if File.exists?(datadir)
-    log "Already tagged: #{datadir}"
+    log "Already exists: #{port}"
+    tag(port)
     next
   end
 

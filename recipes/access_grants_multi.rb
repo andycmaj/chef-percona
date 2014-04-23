@@ -2,22 +2,22 @@
 
 passwords = EncryptedPasswords.new(node, node["percona"]["encrypted_data_bag"])
 
-# define access grants
-template "/etc/mysql/grants.sql" do
-  source "grants.sql.erb"
-  variables(
-    :root_password        => passwords.root_password,
-    :debian_user          => node["percona"]["server"]["debian_username"],
-    :debian_password      => passwords.debian_password,
-    :backup_password      => passwords.backup_password
-  )
-  owner "root"
-  group "root"
-  mode "0600"
+grants_script = "/etc/mysql/grants.sql"
+unless File.exists?(grants_script)
+  # define access grants
+  template grants_script do
+    source "grants.sql.erb"
+    variables(
+      :root_password => passwords.root_password,
+    )
+    owner "root"
+    group "root"
+    mode "0600"
+  end
 end
 
-instance_ports = node["instance_ports"]
-instance_ports.each do |port|
+node["instance_ports"].each do |port|
+  next if tagged?(port)
 
   # execute access grants
   if passwords.root_password && !passwords.root_password.empty?

@@ -1,41 +1,26 @@
 include_recipe "percona::package_repo"
 
 # install packages
-case node["platform_family"]
-when "debian"
-  package node["percona"]["server"]["package"] do
-    action :install
-    options "--force-yes"
-  end
-when "rhel"
-  # Need to remove this to avoid conflicts
-  package "mysql-libs" do
-    action :remove
-    not_if "rpm -qa | grep #{node['percona']['server']['shared_pkg']}"
-  end
-
-  # we need mysqladmin
-  include_recipe "percona::client"
-
-  package node["percona"]["server"]["package"] do
-    action :install
-  end
+# Need to remove this to avoid conflicts
+package "mysql-libs" do
+  action :remove
+  not_if "rpm -qa | grep #{node['percona']['server']['shared_pkg']}"
 end
 
+# we need mysqladmin
+include_recipe "percona::client"
 
-include_recipe node["percona"]["server"]["role"] == "multi_instance" \
-    ? "percona::configure_multi_instance_server" \
-    : "percona::configure_server"
+package node["percona"]["server"]["package"] do
+  action :install
+end
+
+include_recipe "percona::configure_multi_instance_server"
 
 # access grants
 unless node["percona"]["skip_passwords"]
-  include_recipe node["percona"]["server"]["role"] == "multi_instance" \
-    ? "percona::access_grants_multi" \
-    : "percona::access_grants"
+  include_recipe "percona::access_grants_multi"
 end
+
+include_recipe "percona::run_bootstrap_scripts"
 
 include_recipe "percona::disable_firewall"
-
-unless node["percona"]["skip_passwords"]
-  include_recipe "percona::replication"
-end
