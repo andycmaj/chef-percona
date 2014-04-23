@@ -8,7 +8,7 @@ unless File.exists?(grants_script)
   template grants_script do
     source "grants.sql.erb"
     variables(
-      :root_password => passwords.root_password,
+      :root_password => passwords.root_password
     )
     owner "root"
     group "root"

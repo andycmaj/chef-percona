@@ -30,13 +30,14 @@ if server["bind_to"]
   end
 end
 
-# this is where we dump sql templates for replication, etc.
-directory "/etc/mysql" do
-  owner "root"
-  group "root"
-  mode 0755
+unless Dir.exists?("/etc/mysql")
+  # this is where we dump sql templates for replication, etc.
+  directory "/etc/mysql" do
+    owner "root"
+    group "root"
+    mode 0755
+  end
 end
-
 
 tmpdir = mysqld["tmpdir"] || server["tmpdir"]
 user   = mysqld["username"] || server["username"]
