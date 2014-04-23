@@ -29,15 +29,11 @@ node["instance_ports"].each do |port|
           "' -e '' &> /dev/null > /dev/null &> /dev/null ; if [ $? -eq 0 ] ; " + \
           "then /usr/bin/mysql -h127.0.0.1 -P#{port} -p'" + passwords.root_password + \
           "' < /etc/mysql/grants.sql ; else /usr/bin/mysql -h127.0.0.1 -P#{port} < /etc/mysql/grants.sql ; fi ;"
-      action :nothing
-      subscribes :run, resources("template[/etc/mysql/grants.sql]"), :immediately
     end
   else
     # Simpler path...  just try running the grants command
     execute "mysql-install-privileges" do
       command "/usr/bin/mysql -h127.0.0.1 -P#{port} < /etc/mysql/grants.sql"
-      action :nothing
-      subscribes :run, resources("template[/etc/mysql/grants.sql]"), :immediately
     end
   end
 
