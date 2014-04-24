@@ -23,4 +23,6 @@ end
 
 include_recipe "percona::run_bootstrap_scripts"
 
-include_recipe "percona::disable_firewall"
+if node["percona"]["server"]["disable_firewall"]
+  include_recipe "percona::disable_firewall"
+end

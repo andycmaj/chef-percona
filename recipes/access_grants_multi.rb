@@ -9,9 +9,6 @@ template "/etc/mysql/grants.sql" do
   variables(
     :root_password => passwords.root_password
   )
-  # owner "root"
-  # group "root"
-  # mode "0600"
 end
 
 node["instance_ports"].each do |port|

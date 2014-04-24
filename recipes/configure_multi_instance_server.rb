@@ -2,8 +2,6 @@
 
 percona = node["percona"]
 server  = percona["server"]
-conf    = percona["conf"]
-mysqld  = (conf && conf["mysqld"]) || {}
 
 # TODO: factor common actions into common configure recipe.
 # construct an encrypted passwords helper -- giving it the node and bag name
@@ -44,11 +42,10 @@ unless Dir.exists?("/etc/mysql")
   end
 end
 
-tmpdir = mysqld["tmpdir"] || server["tmpdir"]
-user   = mysqld["username"] || server["username"]
+user = server["username"]
 
 # setup the tmp directory
-directory tmpdir do
+directory server["tmpdir"] do
   owner user
   group user
   recursive true
@@ -59,7 +56,7 @@ instance_ports = node["instance_ports"]
 # TODO: default to just 3306 when instance_ports is null or empty
 
 instance_ports.each do |port|
-  datadir = ( mysqld["datadir"] || server["datadir"] ) % { :port => port }
+  datadir = server["datadir"] % { :port => port }
   if File.exists?(datadir)
     log "Already exists: #{port}"
     tag(port)
@@ -76,9 +73,8 @@ instance_ports.each do |port|
 
   # setup the main server config file
   # For multiple instances of mysql.%{port}, place the cnf file in the (deprecated) datadir.
-  configFile = datadir + "/my.cnf"
-  template configFile do
-    source "my.cnf.#{conf ? "custom" : server["role"]}.erb"
+  template "#{datadir}/my.cnf" do
+    source "my.cnf.multi_instance.erb"
     variables :port => port
     owner "root"
     group "root"

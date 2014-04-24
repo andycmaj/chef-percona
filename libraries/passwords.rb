@@ -37,24 +37,9 @@ class Chef::EncryptedPasswords
     find_password "mysql", "root", percona_server[:root_password]
   end
 
-  # debian script user password
-  def debian_password
-    find_password "system", percona_server[:debian_username], percona_server[:debian_password]
-  end
-
   # ?
   def old_passwords
     find_password "mysql", "old_passwords", percona_server[:old_passwords]
-  end
-
-  # password for user responsbile for replicating in master/slave environment
-  def replication_password
-    find_password "mysql", "replication", percona_server[:replication][:password]
-  end
-
-  # password for user responsbile for running xtrabackup
-  def backup_password
-    find_password "mysql", node["percona"]["backup"]["username"], node["percona"]["backup"]["password"]
   end
 
   private
