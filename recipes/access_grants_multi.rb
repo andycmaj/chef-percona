@@ -2,18 +2,16 @@
 
 passwords = EncryptedPasswords.new(node, node["percona"]["encrypted_data_bag"])
 
-grants_script = "/etc/mysql/grants.sql"
-unless File.exists?(grants_script)
-  # define access grants
-  template grants_script do
-    source "grants.sql.erb"
-    variables(
-      :root_password => passwords.root_password
-    )
-    owner "root"
-    group "root"
-    mode "0600"
-  end
+# define access grants
+template "/etc/mysql/grants.sql" do
+  source "grants.sql.erb"
+  action :create_if_missing
+  variables(
+    :root_password => passwords.root_password
+  )
+  # owner "root"
+  # group "root"
+  # mode "0600"
 end
 
 node["instance_ports"].each do |port|

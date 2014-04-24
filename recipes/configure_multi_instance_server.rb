@@ -9,6 +9,11 @@ mysqld  = (conf && conf["mysqld"]) || {}
 # construct an encrypted passwords helper -- giving it the node and bag name
 passwords = EncryptedPasswords.new(node, percona["encrypted_data_bag"])
 
+file "/etc/mysql/pw" do
+  content passwords.root_password
+  action :create_if_missing
+end
+
 template "/root/.my.cnf" do
   variables(:root_password => passwords.root_password)
   owner "root"
