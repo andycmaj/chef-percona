@@ -12,6 +12,7 @@ node["instance_ports"].each do |port|
         command "/usr/bin/mysql -h127.0.0.1 -P#{port} -uroot -p'" \
           + passwords.root_password \
           + "' < #{file}"
+        retries 3
       end
 
     }

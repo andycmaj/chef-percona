@@ -27,6 +27,8 @@ class Chef::EncryptedPasswords
       }
     end
 
+     Chef::Log.info("PASSWORD: #{password}")
+
     # password will be nil if no encrypted data bag was loaded
     # fall back to the attribute on this node
     password ||= default

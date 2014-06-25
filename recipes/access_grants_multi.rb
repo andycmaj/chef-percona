@@ -12,7 +12,12 @@ template "/etc/mysql/grants.sql" do
 end
 
 node["instance_ports"].each do |port|
-  next if tagged?(port)
+  datadir = node["percona"]["server"]["datadir"] % { :port => port }
+  if File.exists?(datadir)
+    log "Already exists: #{port}"
+    tag(port)
+    next
+  end
 
   # execute access grants
   if passwords.root_password && !passwords.root_password.empty?

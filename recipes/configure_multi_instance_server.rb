@@ -79,7 +79,6 @@ instance_ports.each do |port|
     owner "root"
     group "root"
     mode 0744
-    # notifies :reload, "service[mysqld_multi]", :immediately if node["percona"]["auto_restart"]
   end
 
   # install db to the data directory
@@ -105,8 +104,10 @@ instance_ports.each do |port|
   end
 
   # now let's set the root password only if this is the initial install
+  pwChangeCommand = "mysqladmin --host=127.0.0.1 --port=#{port} --user=root --password='' password '#{passwords.root_password}'"
+  log "PWCHANGE: #{pwChangeCommand}"
   execute "Update MySQL root password" do
-    command "mysqladmin --host=127.0.0.1 --port=#{port} --user=root --password='' password '#{passwords.root_password}'"
+    command pwChangeCommand
   end
 end
 
