@@ -10,8 +10,11 @@ recipe "percona",                "Includes the client recipe to configure a clie
 recipe "percona::package_repo",  "Sets up the package repository and installs dependent packages"
 recipe "percona::client",        "Installs client libraries"
 recipe "percona::server",        "Installs the server daemon"
+
 recipe "percona::configure_multi_instance_server", "Used internally to manage the server configuration."
 recipe "percona::access_grants_multi", "Used internally to grant permissions for recipes"
+recipe "percona::disable_firewall", "Used internally to disable firewall"
+recipe "percona::run_bootstrap_scripts", "Used internally to run db bootstrapping scripts."
 
 depends "apt", ">= 1.9"
 depends "yum", "~> 3.0"

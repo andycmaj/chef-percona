@@ -1,3 +1,5 @@
+# vim: set ts=2 sw=2 tw=2 :
+
 class Chef::EncryptedPasswords
   # the name of the encrypted data bag
   DEFAULT_BAG_NAME = "passwords"
@@ -15,7 +17,7 @@ class Chef::EncryptedPasswords
       # first, let's check for an encrypted data bag and the given key
       passwords = Chef::EncryptedDataBagItem.load(@bag, key)
       # now, let's look for the user password
-      password = passwords[user]
+      password = passwords[user] || default
     rescue
       Chef::Log.info("Using non-encrypted password for #{user}, #{key}")
     end
@@ -25,13 +27,15 @@ class Chef::EncryptedPasswords
       File.open(pw_file, "rb") { |file|
         password = file.read().delete("\n")
       }
+    else
+      File.open(pw_file, 'w') { |file|
+        file.write(password)
+      }
     end
-
-     Chef::Log.info("PASSWORD: #{password}")
 
     # password will be nil if no encrypted data bag was loaded
     # fall back to the attribute on this node
-    password ||= default
+    password
   end
 
   # mysql root

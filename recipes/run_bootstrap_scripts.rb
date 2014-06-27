@@ -13,6 +13,7 @@ node["instance_ports"].each do |port|
           + passwords.root_password \
           + "' < #{file}"
         retries 3
+        retry_delay 10
       end
 
     }

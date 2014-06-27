@@ -10,19 +10,21 @@ end
 # we need mysqladmin
 include_recipe "percona::client"
 
+# install percona server
 package node["percona"]["server"]["package"] do
   action :install
 end
 
+# include_recipe "percona::cleanup_unused_instances"
+
 include_recipe "percona::configure_multi_instance_server"
 
-# access grants
-unless node["percona"]["skip_passwords"]
-  include_recipe "percona::access_grants_multi"
-end
+# access grants for remote access
+# unless node["percona"]["skip_passwords"]
+#   include_recipe "percona::access_grants_multi"
+# end
 
-include_recipe "percona::run_bootstrap_scripts"
-
+# disable firewall on server
 if node["percona"]["server"]["disable_firewall"]
   include_recipe "percona::disable_firewall"
 end
