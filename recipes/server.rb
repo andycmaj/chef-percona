@@ -15,7 +15,7 @@ package node["percona"]["server"]["package"] do
   action :install
 end
 
-# include_recipe "percona::cleanup_unused_instances"
+include_recipe "percona::cleanup_unused_instances"
 
 include_recipe "percona::configure_multi_instance_server"
 
